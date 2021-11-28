@@ -3,3 +3,4 @@
 /app/vendor/
 /.env
 /var/*
+/app/composer.phar
