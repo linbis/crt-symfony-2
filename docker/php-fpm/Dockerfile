@@ -16,7 +16,7 @@ RUN apk add --no-cache \
 ARG PHP_XDEBUG_MODE=off
 ARG PHP_XDEBUG_CLIENT_PORT=5902
 ARG PHP_XDEBUG_CLIENT_HOST=host.docker.internal
-COPY xdebug.ini  /etc/php8/conf.d/xdebug.ini.template
+COPY ./docker/php-fpm/xdebug.ini  /etc/php8/conf.d/xdebug.ini.template
 RUN if [[ "$PHP_XDEBUG_MODE" != "" ]]; then \
         apk add --no-cache php8-pecl-xdebug; \
         export PHP_XDEBUG_MODE=$PHP_XDEBUG_MODE; \
@@ -26,11 +26,14 @@ RUN if [[ "$PHP_XDEBUG_MODE" != "" ]]; then \
     fi
 RUN rm -f /etc/php8/conf.d/xdebug.ini.template
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-COPY php.ini /usr/local/etc/php/conf.d/php.ini
-COPY php-fpm.conf /usr/local/etc/php-fpm.conf
-
 WORKDIR /var/www/crt_symfony_2/
 
-#EXPOSE 9001
+COPY ./app/composer.json /var/www/crt_symfony_2/composer.json
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    composer install
+
+COPY ./docker/php-fpm/php.ini /usr/local/etc/php/conf.d/php.ini
+COPY ./docker/php-fpm/php-fpm.conf /usr/local/etc/php-fpm.conf
+
+
