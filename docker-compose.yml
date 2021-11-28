@@ -2,9 +2,8 @@ version: '3'
 services:
   mysql:
     container_name: ${MYSQL_HOST}
-    image: mysql:8.0.22
-    command: ["--default-authentication-plugin=mysql_native_password"]
-    restart: always
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
     ports:
       - "${MYSQL_PORT}:3306"
     environment:
@@ -12,23 +11,28 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - ./db:/var/lib/mysql
     networks:
       - crt-symfony
   php-fpm:
     container_name: php-fpm
     build:
-      context: ./docker/php-fpm/
+      context: .
+      dockerfile: ./docker/php-fpm/Dockerfile
     ports:
       - "${PHP_PORT}:9001"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_HOST: ${MYSQL_HOST}
     networks:
       - crt-symfony
     volumes:
-      - ./app:/var/www/crt_symfony_2
+      - ./app/public:/var/www/crt_symfony_2/public
+      - ./app/src:/var/www/crt_symfony_2/src
+      - ./app/templates:/var/www/crt_symfony_2/templates
     depends_on:
       - mysql
-
   nginx:
     container_name: nginx
     build:
@@ -39,7 +43,7 @@ services:
       - php-fpm
     volumes:
       - ./app/public:/var/www/crt_symfony_2/public
-      - ./logs/nginx:/var/log/nginx:cached
+      - ./var/logs/nginx:/var/log/nginx:cached
     networks:
       - crt-symfony
 

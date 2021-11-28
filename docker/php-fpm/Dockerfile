@@ -4,13 +4,12 @@ RUN apk add --no-cache \
     coreutils \
     gettext \
     php8-fpm \
-    php8-ctype \
-    php8-curl \
-    php8-json \
-    php8-mysqli \
+    php8-pdo \
+    php8-pdo_mysql \
     php8-session \
     make \
-    curl
+    curl &&\
+    docker-php-ext-install pdo pdo_mysql
 
 # Enable php8-xdebug if $PHP_XDEBUG_MODE is not empty
 ARG PHP_XDEBUG_MODE=off
@@ -29,6 +28,7 @@ RUN rm -f /etc/php8/conf.d/xdebug.ini.template
 WORKDIR /var/www/crt_symfony_2/
 
 COPY ./app/composer.json /var/www/crt_symfony_2/composer.json
+COPY ./app/composer.lock /var/www/crt_symfony_2/composer.lock
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer install
