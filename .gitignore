@@ -2,4 +2,5 @@
 
 /app/vendor/
 /.env
-/logs/*
+/var/*
+/app/composer.phar

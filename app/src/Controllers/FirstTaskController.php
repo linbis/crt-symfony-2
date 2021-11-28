@@ -2,11 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Entity\{
+use App\Entity\FirstTask\{
     Basket, Product, Order
 };
 
-class TaskFirstController extends BaseController
+class FirstTaskController extends BaseController
 {
     public function render(): string
     {
@@ -19,8 +19,8 @@ class TaskFirstController extends BaseController
 
         $order = new Order($basket, 12000);
 
-        $content = '<a href="/">Назад</a><br><h2>Заказ № 1</h2>';
-        $content .= '<p>Состав заказа: <br><br>';
+        $content = '<h1>Задание №1</h1><a href="/">Назад</a><br>';
+        $content .= '<h2>Заказ № 1</h2><p>Состав заказа: <br><br>';
         foreach ($order->getBasket()->describe() as $itemHtml) {
             $content .= $itemHtml . '<br>';
         }
